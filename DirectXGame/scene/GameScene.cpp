@@ -7,6 +7,12 @@ GameScene::GameScene() {}
 GameScene::~GameScene() 
 {
   delete model_;
+  delete modelBlock_;
+  for (WorldTransform* worldTransformBlock : worldTransformBlocks_) 
+  {
+	  delete worldTransformBlock;
+  }
+  worldTransformBlocks_.clear();
   delete player_;
 }
 
@@ -20,6 +26,7 @@ void GameScene::Initialize() {
 	textureHandle_=TextureManager::Load("mario.jpg");
 	//3Dモデルの生成
 	model_ = Model::Create();
+	modelBlock_ = Model::Create();
 	//ワールドトランスフォーム
 
 	//ビュープロジェクション
@@ -28,11 +35,34 @@ void GameScene::Initialize() {
 	player_ = new Player();
 	//自キャラの初期化
 	player_->Initialize(model_, textureHandle_, &viewProjection_);
+	//要素数
+	const uint32_t kNumBlockHorizontal = 20;
+	//ブロック1個分の横幅
+	const float kBlockWidth = 2.0f;
+	//要素数を変更する
+	worldTransformBlocks_.resize(kNumBlockHorizontal);
+	//キューブの生成
+	for (uint32_t i = 0; i < kNumBlockHorizontal; ++i)
+	{
+	  worldTransformBlocks_[i] = new WorldTransform();
+	  worldTransformBlocks_[i] ->Initialize();
+	  worldTransformBlocks_[i]->translation_.x = kBlockWidth * i;
+	  worldTransformBlocks_[i] ->translation_.y=0.0f;
+	}
 }
 
 void GameScene::Update() {
 	//自キャラの更新
 	player_->Update();
+	//ブロックの更新
+	for (WorldTransform* worldTransformBlock : worldTransformBlocks_)
+	{
+
+		worldTransformBlock->matWorld_ =
+		  // 定数バッファに転送
+		  worldTransformBlock->TransferMatrix();
+
+	}
 }
 
 void GameScene::Draw() {
@@ -64,7 +94,10 @@ void GameScene::Draw() {
 	
 	// 自キャラの描画
 	player_->Draw();
-	
+	for (WorldTransform* worldTransformBlock : worldTransformBlocks_) 
+	{
+		modelBlock_->Draw(*worldTransformBlock, viewProjection_);
+	}
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
