@@ -41,8 +41,11 @@ Matrix4x4 MakeRotateYMatrix(float radian) {
 }
 
 Matrix4x4 MakeRotateZMatrix(float radian) {
+	float cosTheta = std::cos(radian);
+	float sinTheta = std::sin(radian);
+	return {cosTheta, sinTheta, 0.0f, 0.0f, -sinTheta, cosTheta, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
 
-    //X軸とY軸の回転行列を作る関数を参考に考えてみよう
+	        0.0f,           0.0f,           0.0f, 1.0f};
 }
 
 Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
