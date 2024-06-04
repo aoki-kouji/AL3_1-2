@@ -9,7 +9,7 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
-
+#include"Skydome.h"
 #include <vector>
 
 /// <summary>
@@ -56,6 +56,7 @@ private: // メンバ変数
 	// 3Dモデル
 	Model* model_ = nullptr;
 	Model* modelBlock_ = nullptr;
+	Model* modelSkydome_ = nullptr;
 	// ワールドトランスフォーム
 	WorldTransform worldTransform_;
 	// ビュープロジェクション
@@ -71,6 +72,10 @@ private: // メンバ変数
 	bool isDebugCameraActive_ = false;
 	// デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
+
+	//天球
+	Skydome* skydome_;
+	
 };
 
 //-----------------------------------------------------------------------------------------------------------------------------------
