@@ -11,6 +11,7 @@
 #include "WorldTransform.h"
 #include"Skydome.h"
 #include <vector>
+#include "MapChipField.h"
 
 /// <summary>
 /// ゲームシーン
@@ -42,6 +43,8 @@ public: // メンバ関数
 	/// 描画
 	/// </summary>
 	void Draw();
+
+	void GenerateBlocks();
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -76,6 +79,8 @@ private: // メンバ変数
 	//天球
 	Skydome* skydome_;
 	
+	//マップフィールド
+	MapChipField* mapChipField_;
 };
 
 //-----------------------------------------------------------------------------------------------------------------------------------

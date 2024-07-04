@@ -2,6 +2,7 @@
 #include "TextureManager.h"
 #include "myMath.h"
 #include <cassert>
+#include<map>
 
 GameScene::GameScene() {}
 
@@ -18,6 +19,8 @@ GameScene::~GameScene() {
 	worldTransformBlocks_.clear();
 
 	delete debugCamera_;
+
+	delete mapChipField_;
 }
 
 void GameScene::Initialize() {
@@ -75,6 +78,33 @@ void GameScene::Initialize() {
 	//天球
 	skydome_ = new Skydome();
 	skydome_->Initialize(modelSkydome_, &viewProjection_);
+
+	//マップチップ
+	mapChipField_ = new MapChipField;
+	mapChipField_->LoadMapChipCsv(" Resources/map.csv");
+	GenerateBlocks();
+	
+}
+
+void GameScene::GenerateBlocks() 
+{
+	uint32_t numBlockVirtical = mapChipField_->GetNumBlockVirtical();
+	uint32_t numBlockHorizontal = mapChipField_->GetNumBlockHorizontal();
+
+	worldTransformBlocks_.resize(numBlockVirtical);
+	for (uint32_t i = 0; i < numBlockVirtical; ++i) {
+		worldTransformBlocks_[i].resize(numBlockHorizontal);
+	}
+	for (uint32_t i = 0; i < numBlockVirtical; ++i) {
+		for (uint32_t j = 0; j < numBlockHorizontal; ++j) {
+			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kBlock) {
+				WorldTransform* worldTransform = new WorldTransform();
+				worldTransform->Initialize();
+				worldTransformBlocks_[i][j] = worldTransform;
+				worldTransformBlocks_[i][j] ->translation_=mapChipField_->GetMapChipPositionByIndex(j,i);
+			}
+		}
+	}
 }
 
 void GameScene::Update() {
