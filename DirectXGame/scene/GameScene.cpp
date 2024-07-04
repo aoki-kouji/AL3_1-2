@@ -142,6 +142,9 @@ void GameScene::Update() {
 
 			// アフィン変換行列の作成
 			worldTransformBlockYoko->UpdateMatrix();
+			
+			worldTransformBlockYoko->TransferMatrix();
+
 		}
 	}
 
