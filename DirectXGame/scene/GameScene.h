@@ -60,6 +60,7 @@ private: // メンバ変数
 	Model* model_ = nullptr;
 	Model* modelBlock_ = nullptr;
 	Model* modelSkydome_ = nullptr;
+	Model* modelPlayer_ = nullptr;
 	// ワールドトランスフォーム
 	WorldTransform worldTransform_;
 	// ビュープロジェクション

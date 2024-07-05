@@ -35,6 +35,7 @@ void GameScene::Initialize() {
 	model_ = Model::Create();
 	modelBlock_ = Model::Create();
 	modelSkydome_ = Model::CreateFromOBJ("sphere", true);
+	modelPlayer_ = Model::CreateFromOBJ("player", true);
 	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
 	// ビュープロジェクションの初期化
@@ -42,34 +43,39 @@ void GameScene::Initialize() {
 
 	// 自キャラの生成
 	player_ = new Player();
+	
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 19);
+	
 	// 自キャラの初期化
-	player_->Initialize(model_, textureHandle_, &viewProjection_);
+	player_->Initialize(modelPlayer_, playerPosition, &viewProjection_);
+	
+	{
+		// 要素数
+		/*const uint32_t kNumBlockVirtical = 10;
+		const uint32_t kNumBlockHorizontal = 20;*/
+		// ブロック1個分の横幅
+		/*const float kBlockWidth = 2.0f;
+		const float kBlockHeight = 2.0f;*/
+		// 要素数を変更する
+		/*worldTransformBlocks_.resize(kNumBlockVirtical);*/
 
-	// 要素数
-	const uint32_t kNumBlockVirtical = 10;
-	const uint32_t kNumBlockHorizontal = 20;
-	// ブロック1個分の横幅
-	const float kBlockWidth = 2.0f;
-	const float kBlockHeight = 2.0f;
-	// 要素数を変更する
-	worldTransformBlocks_.resize(kNumBlockVirtical);
-
-	// キューブの生成
-	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
-		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
-	}
-
-	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
-		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
-			if (j % 2 == (i % 2)) {
-				worldTransformBlocks_[i][j] = new WorldTransform();
-				worldTransformBlocks_[i][j]->Initialize();
-				worldTransformBlocks_[i][j]->translation_.x = kBlockWidth * j;
-				worldTransformBlocks_[i][j]->translation_.y = kBlockHeight * i;
-			} else {
-				worldTransformBlocks_[i][j] = nullptr;
-			}
+		// キューブの生成
+		/*for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
+		    worldTransformBlocks_[i].resize(kNumBlockHorizontal);
 		}
+
+		for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
+		    for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
+		        if (j % 2 == (i % 2)) {
+		            worldTransformBlocks_[i][j] = new WorldTransform();
+		            worldTransformBlocks_[i][j]->Initialize();
+		            worldTransformBlocks_[i][j]->translation_.x = kBlockWidth * j;
+		            worldTransformBlocks_[i][j]->translation_.y = kBlockHeight * i;
+		        } else {
+		            worldTransformBlocks_[i][j] = nullptr;
+		        }
+		    }
+		}*/
 	}
 
 	// デバッグカメラの生成
