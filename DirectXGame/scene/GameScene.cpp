@@ -46,6 +46,8 @@ void GameScene::Initialize() {
 	player_ = new Player();
 	
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(2, 18);
+
+	cameraController_ = new CameraController();
 	
 	// 自キャラの初期化
 	player_->Initialize(modelPlayer_, playerPosition, &viewProjection_);
@@ -91,6 +93,11 @@ void GameScene::Initialize() {
 	mapChipField_->LoadMapChipCsv("Resources/map.csv");
 	GenerateBlocks();
 	
+	//カメラ
+	cameraController_ = new CameraController;
+	cameraController_->Initialize();
+	cameraController_->SetTarget(player_);
+	cameraController_->Reset();
 }
 
 void GameScene::GenerateBlocks() 
@@ -129,8 +136,12 @@ void GameScene::Update() {
 	if (isDebugCameraActive_) {
 		// デバッグカメラの更新
 		debugCamera_->Update();
+		// カメラコントロール
+		cameraController_->Update();
 		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+		viewProjection_.matView = cameraController_->GetViewProjection().matView;
+		viewProjection_.matProjection = cameraController_->GetViewProjection().matProjection;
 		// ビュープロジェクション行列の転送
 		viewProjection_.TransferMatrix();
 	} else {
@@ -157,6 +168,8 @@ void GameScene::Update() {
 
 	//天球
 	skydome_->Update();
+
+	
 }
 
 void GameScene::Draw() {
