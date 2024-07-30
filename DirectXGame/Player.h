@@ -9,6 +9,7 @@ class MapChipField;
 /// <summary>
 /// 自キャラ
 /// </summary>
+
 class Player {
 
 public:
