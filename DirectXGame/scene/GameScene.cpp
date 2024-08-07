@@ -25,6 +25,7 @@ GameScene::~GameScene() {
 	delete mapChipField_;
 
 	delete cameraController;
+	delete modelEnemy_;
 }
 
 void GameScene::Initialize() {
@@ -34,11 +35,12 @@ void GameScene::Initialize() {
 	audio_ = Audio::GetInstance();
 
 	// ファイル名を指定してテクスチャを読み込む
-	//	textureHandle_ = TextureManager::Load("block.jpg");
+
 	// 3Dモデルの生成
-	//	model_ = Model::Create();
 	modelBlock_ = Model::CreateFromOBJ("block");
 	modelPlayer_ = Model::CreateFromOBJ("player");
+	modelEnemy_ = Model::CreateFromOBJ("enemy");
+	modelSkydome_ = Model::CreateFromOBJ("sphere", true);
 	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
 	// ビュープロジェクションの初期化
@@ -53,8 +55,6 @@ void GameScene::Initialize() {
 
 	// 天球の生成
 	skydome_ = new Skydome();
-	// 天球3Dモデルの生成
-	modelSkydome_ = Model::CreateFromOBJ("sphere", true);
 	// 天球の初期化
 	skydome_->Initialize(modelSkydome_, &viewProjection_);
 
@@ -75,6 +75,13 @@ void GameScene::Initialize() {
 
 	CameraController::Rect cameraArea = {12.0f, 100 - 12.0f, 6.0f, 6.0f};
 	cameraController->SetMovableArea(cameraArea);
+
+	// 敵の生成
+	enemy_ = new Enemy();
+
+	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(5, 18);
+	// 敵の初期化
+	enemy_->Initialize(modelEnemy_, enemyPosition, &viewProjection_);
 }
 
 void GameScene::GenerateBlocks() {
@@ -140,6 +147,9 @@ void GameScene::Update() {
 	// 天球の更新
 	skydome_->Update();
 
+	// 敵の更新
+	enemy_->Update();
+
 	// 縦横ブロック更新
 	for (std::vector<WorldTransform*> worldTransformBlockTate : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlockYoko : worldTransformBlockTate) {
@@ -185,12 +195,15 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	// 3Dモデル描画
-	//	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
+
 	// 自キャラの描画
 	player_->Draw();
 
 	// 天球の描画
 	skydome_->Draw();
+
+	// 敵の描画
+	enemy_->Draw();
 
 	// 縦横ブロック描画
 	for (std::vector<WorldTransform*> worldTransformBlockTate : worldTransformBlocks_) {
