@@ -107,8 +107,11 @@ void GameScene::Update() {
 		UpdateBlocks();
 
 		CheckAllCollisions();
-
+		break;
 	case Phase::kDeath:
+		if (deathParticles_ && deathParticles_->IsFinished()) {
+			finished_ = true;
+		}
 		worldTransformSkydome_.UpdateMatrix();
 
 		for (Enemy* enemy : enemies_) {
@@ -166,10 +169,12 @@ void GameScene::Draw() {
 		player_->Draw();
 	}
 
+	// 敵
 	for (Enemy* enemy : enemies_) {
 		enemy->Draw();
 	}
 
+	// パーティクル
 	if (deathParticles_) {
 		deathParticles_->Draw();
 	}

@@ -3,7 +3,8 @@
 #include "myMath.h"
 #include <cassert>
 
-void DeathParticles::Initialize(
+
+	void DeathParticles::Initialize(
     Model* model, ViewProjection* viewProjection, const Vector3& position) {
 	// NULLポインタチェック
 	assert(model);
