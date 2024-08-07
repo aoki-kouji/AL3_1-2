@@ -38,7 +38,7 @@ void TitleScene::Update() {
 	worldTransformTitle_.translation_.y = std::sin(angle) + 10.0f;
 
 	viewProjection_.TransferMatrix();
-	worldTransformTitle_.UpdateMatrix();
+	
 	worldTransformPlayer_.UpdateMatrix();
 }
 
