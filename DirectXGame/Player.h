@@ -3,17 +3,16 @@
 #include "Model.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include"AABB.h"
 
 class MapChipField;
+class Enemy;
 
 /// <summary>
 /// 自キャラ
 /// </summary>
-
 class Player {
-
 public:
-
 	// 左右
 	enum class LRDirection {
 		kRight,
@@ -46,6 +45,13 @@ public:
 	/// </summary>
 	void Draw();
 
+	// ワールド座標を取得
+	Vector3 GetWorldPosition();
+
+	AABB GetAABB();
+
+	void OnCollision(const Enemy* enemy);
+
 	// setter
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 
@@ -54,7 +60,6 @@ public:
 	const Vector3& GetVelocity() const { return velocity_; }
 
 private:
-
 	static inline const float kAcceleration = 0.1f;
 	static inline const float kAttenuation = 0.05f;
 	static inline const float kJumpAcceleration = 20.0f;
@@ -77,21 +82,14 @@ private:
 		Vector3 move;
 	};
 
-	// モデル
 	Model* model_ = nullptr;
-	// ワールド変換データ
 	WorldTransform worldTransform_;
 	ViewProjection* viewProjection_ = nullptr;
 	Vector3 velocity_ = {};
-
 	bool onGround_ = true;
-
 	LRDirection lrDirection_ = LRDirection::kRight;
-	// 旋回開始時の角度
 	float turnFirstRotationY_ = 0.0f;
-	// 旋回タイマー
 	float turnTimer_ = 0.0f;
-	// マップチップによるフィールド
 	MapChipField* mapChipField_ = nullptr;
 
 	void InputMove();

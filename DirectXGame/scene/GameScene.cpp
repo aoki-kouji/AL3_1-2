@@ -9,6 +9,10 @@ GameScene::GameScene() {}
 GameScene::~GameScene() {
 	delete model_;
 
+	for (Enemy* enemy : enemies_) {
+		delete enemy;
+	}
+
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			delete worldTransformBlock;
@@ -77,11 +81,11 @@ void GameScene::Initialize() {
 	cameraController->SetMovableArea(cameraArea);
 
 	// 敵の生成
-	enemy_ = new Enemy();
+	newEnemy_ = new Enemy();
+	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(14, 18);
+	newEnemy_->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
 
-	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(5, 18);
-	// 敵の初期化
-	enemy_->Initialize(modelEnemy_, enemyPosition, &viewProjection_);
+	enemies_.push_back(newEnemy_);
 }
 
 void GameScene::GenerateBlocks() {
@@ -148,7 +152,7 @@ void GameScene::Update() {
 	skydome_->Update();
 
 	// 敵の更新
-	enemy_->Update();
+	newEnemy_->Update();
 
 	// 縦横ブロック更新
 	for (std::vector<WorldTransform*> worldTransformBlockTate : worldTransformBlocks_) {
@@ -166,6 +170,34 @@ void GameScene::Update() {
 			worldTransformBlockYoko->TransferMatrix();
 		}
 	}
+	CheckAllCollisions();
+}
+
+void GameScene::CheckAllCollisions() {
+
+	// 判定対象１と２の座標
+	AABB aabb1, aabb2;
+
+#pragma region
+	// 自キャラの座標
+	aabb1 = player_->GetAABB();
+
+	// 自キャラと敵弾全ての当たり判定
+	for (Enemy* enemy : enemies_) {
+
+		// 敵弾の座標
+		aabb2 = enemy->GetAABB();
+
+		// AABB同士の交差判定
+		if (IsCollision(aabb1, aabb2)) {
+
+			// 自キャラの衝突時コールバックを呼び出す
+			player_->OnCollision(enemy);
+
+			enemy->OnCollision(player_);
+		}
+	}
+#pragma endregion
 }
 
 void GameScene::Draw() {
@@ -203,7 +235,7 @@ void GameScene::Draw() {
 	skydome_->Draw();
 
 	// 敵の描画
-	enemy_->Draw();
+	newEnemy_->Draw();
 
 	// 縦横ブロック描画
 	for (std::vector<WorldTransform*> worldTransformBlockTate : worldTransformBlocks_) {
