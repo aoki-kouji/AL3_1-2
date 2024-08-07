@@ -58,6 +58,7 @@ public:
 	// getter
 	const WorldTransform& GetWorldTransform() const { return worldTransform_; }
 	const Vector3& GetVelocity() const { return velocity_; }
+	bool IsDead() const { return isDead_; };
 
 private:
 	static inline const float kAcceleration = 0.1f;
@@ -73,6 +74,7 @@ private:
 	static inline const float kHeight = 0.8f;
 	static inline const float kBlank = 0.04f;
 	static inline const float kGroundSearchHeight = 0.06f;
+	bool isDead_ = false;
 
 	// マップとの当たり判定情報
 	struct CollisionMapInfo {

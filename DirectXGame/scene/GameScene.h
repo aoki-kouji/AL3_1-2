@@ -15,6 +15,8 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include"Enemy.h"
+#include"DeathParticles.h"
+#include<list>
 
 /// <summary>
 /// ゲームシーン
@@ -47,11 +49,12 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
-	void GenerateBlocks();
-
-	void CheckAllCollisions();
-
 private: // メンバ変数
+	enum class Phase {
+		kPlay,  // ゲームプレイ
+		kDeath, // デス演出
+	};
+
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
@@ -59,40 +62,45 @@ private: // メンバ変数
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
-	// テクスチャハンドル
-	uint32_t textureHandle_ = 0;
-	// 3Dモデル
-	Model* model_ = nullptr;
-	Model* modelBlock_ = nullptr;
-	Model* modelPlayer_ = nullptr;
-	Model* modelEnemy_ = nullptr;
-	// ワールドトランスフォーム
-	WorldTransform worldTransform_;
 	// ビュープロジェクション
 	ViewProjection viewProjection_;
-
+	// テクスチャハンドル
+	uint32_t textureHandle_ = 0;
 	// 自キャラ
 	Player* player_ = nullptr;
-
-	// 縦横ブロック配列
+	Enemy* enemy_ = nullptr;
+	// モデルデータ
+	Model* modelPlayer_ = nullptr;
+	Model* modelBlock_ = nullptr;
+	Model* modelSkydome_ = nullptr;
+	Model* modelEnemy_ = nullptr;
+	Model* modelDeathParticle_ = nullptr;
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
-
-	// デバッグカメラ有効
-	bool isDebugCameraActive_ = false;
+	WorldTransform worldTransformSkydome_;
 	// デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
-
-	// 天球
-	Skydome* skydome_ = nullptr;
-	// 3Dモデル
-	Model* modelSkydome_ = nullptr;
-
+	// デバッグカメラ有効
+	bool isDebugCameraActive_ = false;
 	// マップチップフィールド
-	MapChipField* mapChipField_ = nullptr;
-
+	MapChipField* mapChipField_;
 	CameraController* cameraController = nullptr;
 
-	// 敵
-	Enemy* newEnemy_ = nullptr;
 	std::list<Enemy*> enemies_;
+	Enemy* newEnemy_ = nullptr;
+
+	Phase phase_;
+
+	DeathParticles* deathParticles_ = nullptr;
+
+	void ChangePhase();
+
+	void GenerateBlocks();
+
+	void UpdateCamera();
+
+	void UpdateBlocks();
+
+	// 衝突判定と応答
+
+	void CheckAllCollisions();
 };
