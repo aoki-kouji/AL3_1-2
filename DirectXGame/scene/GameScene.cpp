@@ -1,8 +1,9 @@
+
 #include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
 
-GameScene::GameScene() {}
+GameScene::GameScene() { delete model_; }
 
 GameScene::~GameScene() {}
 
@@ -11,6 +12,7 @@ void GameScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
+	model_ = Model::Create();
 }
 
 void GameScene::Update() {}
