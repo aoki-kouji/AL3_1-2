@@ -7,6 +7,7 @@
 
 class MapChipField;
 class Enemy;
+class Goal;
 
 /// <summary>
 /// 自キャラ
@@ -51,6 +52,7 @@ public:
 	AABB GetAABB();
 
 	void OnCollision(const Enemy* enemy);
+	void OnCollision(const Goal* goal);
 
 	// setter
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
@@ -59,6 +61,7 @@ public:
 	const WorldTransform& GetWorldTransform() const { return worldTransform_; }
 	const Vector3& GetVelocity() const { return velocity_; }
 	bool IsDead() const { return isDead_; };
+	bool IsGoal() const { return isGoal_; };
 
 private:
 	static inline const float kAcceleration = 0.1f;
@@ -75,6 +78,7 @@ private:
 	static inline const float kBlank = 0.04f;
 	static inline const float kGroundSearchHeight = 0.06f;
 	bool isDead_ = false;
+	bool isGoal_ = false;
 
 	// マップとの当たり判定情報
 	struct CollisionMapInfo {

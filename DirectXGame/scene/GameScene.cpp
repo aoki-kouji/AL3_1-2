@@ -49,10 +49,19 @@ void GameScene::Initialize() {
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/map.csv");
 
+	goal_ = new Goal();
+	modelGoal_ = Model::CreateFromOBJ("cube", true);
+	Vector3 goalPosition = mapChipField_->GetMapChipPositionByIndex(40, 18);
+
+	goal_->Initialize(modelGoal_, &viewProjection_, goalPosition);
+
+	goal_->SetMapChipField(mapChipField_);
+
 	// 自キャラの生成
 	player_ = new Player();
 	// 自キャラの初期化
 	// 座標をマップチップ番号で指定
+
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(5, 16);
 	player_->Initialize(modelPlayer_, &viewProjection_, playerPosition);
 	player_->SetMapChipField(mapChipField_);
@@ -99,14 +108,19 @@ void GameScene::Update() {
 		cameraController->Update();
 
 		for (Enemy* enemy : enemies_) {
-			enemy->Update();
+			enemy->Update();	
 		}
+
+		goal_->Update();
 
 		UpdateCamera();
 
 		UpdateBlocks();
 
 		CheckAllCollisions();
+
+		CheckGoalCollisions();
+
 		break;
 	case Phase::kDeath:
 		if (deathParticles_ && deathParticles_->IsFinished()) {
@@ -118,13 +132,18 @@ void GameScene::Update() {
 			enemy->Update();
 		}
 
+		goal_->Update();
+
 		if (deathParticles_) {
 			deathParticles_->Update();
 		}
 
 		UpdateCamera();
 		break;
+	case Phase::kGoal:
+		finished_ = true;
 	}
+	
 }
 
 void GameScene::Draw() {
@@ -153,7 +172,7 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	// 天球の描画
-	modelSkydome_->Draw(worldTransformSkydome_, viewProjection_);
+	//modelSkydome_->Draw(worldTransformSkydome_, viewProjection_);
 
 	for (std::vector<WorldTransform*> worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform*& worldTransformBlock : worldTransformBlockLine) {
@@ -173,6 +192,8 @@ void GameScene::Draw() {
 	for (Enemy* enemy : enemies_) {
 		enemy->Draw();
 	}
+
+	goal_->Draw();
 
 	// パーティクル
 	if (deathParticles_) {
@@ -211,6 +232,11 @@ void GameScene::ChangePhase() {
 			deathParticles_->Initialize(
 			    modelDeathParticle_, &viewProjection_, deathParticlesPosition);
 		}
+
+		if (player_->IsGoal()) {
+			phase_ = Phase::kGoal;
+		}
+
 		break;
 	case Phase::kDeath:
 
@@ -306,5 +332,25 @@ void GameScene::CheckAllCollisions() {
 			}
 		}
 	}
+
 #pragma endregion
+}
+
+void GameScene::CheckGoalCollisions() { // 判定対象1と2の座標
+	AABB aabb1, aabb2;
+
+	// 自キャラの座標
+	aabb1 = player_->GetAABB();
+
+	// 自キャラと敵弾すべての当たり判定
+	// 敵弾の座標
+	aabb2 = goal_->GetAABB();
+
+	// AABB同士の交差判定
+	if (IsCollision(aabb1, aabb2)) {
+		// 自キャラの衝突時コールバックを呼び起こす
+		player_->OnCollision(goal_);
+		// ゴール時
+		goal_->OnCollision(player_);
+	}
 }

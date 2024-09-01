@@ -16,6 +16,8 @@
 #include"Enemy.h"
 #include"DeathParticles.h"
 #include<list>
+#include"goal.h"
+
 
 /// <summary>
 /// ゲームシーン
@@ -54,6 +56,7 @@ private: // メンバ変数
 	enum class Phase {
 		kPlay,  // ゲームプレイ
 		kDeath, // デス演出
+		kGoal
 	};
 
 	DirectXCommon* dxCommon_ = nullptr;
@@ -70,12 +73,14 @@ private: // メンバ変数
 	// 自キャラ
 	Player* player_ = nullptr;
 	Enemy* enemy_ = nullptr;
+	Goal* goal_ = nullptr;
 	// モデルデータ
 	Model* modelPlayer_ = nullptr;
 	Model* modelBlock_ = nullptr;
 	Model* modelSkydome_ = nullptr;
 	Model* modelEnemy_ = nullptr;
 	Model* modelDeathParticle_ = nullptr;
+	Model* modelGoal_ = nullptr;
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 	WorldTransform worldTransformSkydome_;
 	// デバッグカメラ
@@ -95,6 +100,8 @@ private: // メンバ変数
 
 	DeathParticles* deathParticles_ = nullptr;
 
+	//Goal* goal_;
+
 	void ChangePhase();
 
 	void GenerateBlocks();
@@ -106,4 +113,5 @@ private: // メンバ変数
 	// 衝突判定と応答
 
 	void CheckAllCollisions();
+	void CheckGoalCollisions();
 };
